@@ -50,18 +50,18 @@ func main() {
 	enablescanner := getPOSTRequest(datapaq_path +"/enableBarcodeScanner",nil)
 	log.Println(enablescanner)
 
-	// enable barcode scanner
+	// disable barcode scanner
 	disablescanner := getPOSTRequest(datapaq_path +"/disableBarcodeScanner",nil)
 	log.Println(disablescanner)
 
-	// save last image
+	// save last image specify the path
 	saveImgMap := make(map[string]string)
 	saveImgMap["path"] = "C:/temp/lastImg_1.png"
 	saveImgMap["scaleFactor"] = "0.15"
 	saveLastImage := getPOSTRequest(datapaq_path +"/saveLastImage",saveImgMap)
 	log.Println(saveLastImage)
 
-	// shutdown
+	// shutdown webserver
 	shutdown := getPOSTRequest(datapaq_path +"/shutdown",nil)
 	log.Println(shutdown)
 }
