@@ -23,49 +23,50 @@ func main() {
 	version := getGETRequest(datapaq_path +"/version",nil)
 	log.Println(version)
 
-	//Get all container uid's, this can be used to call the scan method
-	uids := getGETRequest(datapaq_path +"/uids",nil)
-	log.Println(uids)
+	// //Get all container uid's, this can be used to call the scan method
+	// uids := getGETRequest(datapaq_path +"/uids",nil)
+	// log.Println(uids)
 
-	//Get linear barcode
-	scanLinearBarcode := getGETRequest(datapaq_path +"/scanLinearBarcode",nil)
-	log.Println(scanLinearBarcode)
+	// //Get linear barcode
+	// scanLinearBarcode := getGETRequest(datapaq_path +"/scanLinearBarcode",nil)
+	// log.Println(scanLinearBarcode)
 
-	//Scan a uid as Text
-	scanparam := make(map[string]string)
-	scanparam["uid"] = "1"
-	scan := getGETRequest(datapaq_path +"/scanAsText",scanparam)
-	log.Println(scan)
+	// //Scan a uid as Text
+	// scanparam := make(map[string]string)
+	// scanparam["uid"] = "1"
+	// scan := getGETRequest(datapaq_path +"/scanAsText",scanparam)
+	// log.Println(scan)
 
-	// GET CALLS WITH IMAGE/PNG
+	// // GET CALLS WITH IMAGE/PNG
 
-	// save last image with scale factor
-	scaleParam := make(map[string]string)
-	scaleParam["scaleFactor"] = "0.15"
-	getGETIMGRequest(datapaq_path +"/lastImage",scaleParam,"C:/temp/lastImg.png")
+	// // save last image with scale factor
+	// scaleParam := make(map[string]string)
+	// scaleParam["scaleFactor"] = "0.15"
+	// getGETIMGRequest(datapaq_path +"/lastImage",scaleParam,"C:/temp/lastImg.png")
 
-	// POST CALLS
+	// // POST CALLS
 
-	// enable barcode scanner
-	enablescanner := getPOSTRequest(datapaq_path +"/enableBarcodeScanner",nil)
-	log.Println(enablescanner)
+	// // enable barcode scanner
+	// enablescanner := getPOSTRequest(datapaq_path +"/enableBarcodeScanner",nil)
+	// log.Println(enablescanner)
 
-	// disable barcode scanner
-	disablescanner := getPOSTRequest(datapaq_path +"/disableBarcodeScanner",nil)
-	log.Println(disablescanner)
+	// // disable barcode scanner
+	// disablescanner := getPOSTRequest(datapaq_path +"/disableBarcodeScanner",nil)
+	// log.Println(disablescanner)
 
-	// save last image specify the path
-	saveImgMap := make(map[string]string)
-	saveImgMap["path"] = "C:/temp/lastImg_1.png"
-	saveImgMap["scaleFactor"] = "0.15"
-	saveLastImage := getPOSTRequest(datapaq_path +"/saveLastImage",saveImgMap)
-	log.Println(saveLastImage)
+	// // save last image specify the path
+	// saveImgMap := make(map[string]string)
+	// saveImgMap["path"] = "C:/temp/lastImg_1.png"
+	// saveImgMap["scaleFactor"] = "0.15"
+	// saveLastImage := getPOSTRequest(datapaq_path +"/saveLastImage",saveImgMap)
+	// log.Println(saveLastImage)
 
-	// shutdown webserver
-	shutdown := getPOSTRequest(datapaq_path +"/shutdown",nil)
-	log.Println(shutdown)
+	// // shutdown webserver
+	// shutdown := getPOSTRequest(datapaq_path +"/shutdown",nil)
+	// log.Println(shutdown)
 }
 
+// Function for GET request
 func getGETRequest(path string, parameters map[string]string ) string {
 	u, _ := url.Parse(path)
 	if parameters != nil && len(parameters) != 0 {
@@ -91,6 +92,7 @@ func getGETRequest(path string, parameters map[string]string ) string {
 	return sb
 }
 
+// Function for GET request when the return is of type IMG/PNG
 func getGETIMGRequest(path string, parameters map[string]string,imgPath string ) {
 	u, _ := url.Parse(path)
 	if parameters != nil && len(parameters) != 0 {
@@ -118,6 +120,7 @@ func getGETIMGRequest(path string, parameters map[string]string,imgPath string )
     log.Println("Success!")
 }
 
+// Function for POST request
 func getPOSTRequest(path string, parameters map[string]string ) string {
 	u, _ := url.Parse(path)
 	if parameters != nil && len(parameters) != 0 {
