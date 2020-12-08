@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"io"
 	"os"
+	"encoding/json"
 )
 
 // this is a comment
@@ -14,57 +15,126 @@ const (
 	datapaq_path = "http://localhost:9998/datapaq"
 )
 
+
 func main() {
 	log.Println("DP3 Remote calls")
 	
 	// GET CALLS
+	getDatapaqVersion();
+	getDatapaqStatus();
+	//Get all container uid's, this can be used to call the scan method
+	getContainerUids()
+	//Get linear barcode
+	getLinearBarcode()
 
-	//Get datapaq version
-	version := getGETRequest(datapaq_path +"/version",nil)
-	log.Println(version)
+	getContainerScanAsJson()
 
-	// //Get all container uid's, this can be used to call the scan method
-	// uids := getGETRequest(datapaq_path +"/uids",nil)
-	// log.Println(uids)
-
-	// //Get linear barcode
-	// scanLinearBarcode := getGETRequest(datapaq_path +"/scanLinearBarcode",nil)
-	// log.Println(scanLinearBarcode)
-
-	// //Scan a uid as Text
-	// scanparam := make(map[string]string)
-	// scanparam["uid"] = "1"
-	// scan := getGETRequest(datapaq_path +"/scanAsText",scanparam)
-	// log.Println(scan)
-
-	// // GET CALLS WITH IMAGE/PNG
+	// GET CALLS WITH IMAGE/PNG
 
 	// // save last image with scale factor
 	// scaleParam := make(map[string]string)
 	// scaleParam["scaleFactor"] = "0.15"
 	// getGETIMGRequest(datapaq_path +"/lastImage",scaleParam,"C:/temp/lastImg.png")
 
-	// // POST CALLS
+	// POST CALLS
 
-	// // enable barcode scanner
-	// enablescanner := getPOSTRequest(datapaq_path +"/enableBarcodeScanner",nil)
-	// log.Println(enablescanner)
+	enableBarcodeScanner()
 
-	// // disable barcode scanner
-	// disablescanner := getPOSTRequest(datapaq_path +"/disableBarcodeScanner",nil)
-	// log.Println(disablescanner)
+	disableBarcodeScanner()
 
-	// // save last image specify the path
-	// saveImgMap := make(map[string]string)
-	// saveImgMap["path"] = "C:/temp/lastImg_1.png"
-	// saveImgMap["scaleFactor"] = "0.15"
-	// saveLastImage := getPOSTRequest(datapaq_path +"/saveLastImage",saveImgMap)
-	// log.Println(saveLastImage)
+	getLastSavedImage()
 
-	// // shutdown webserver
-	// shutdown := getPOSTRequest(datapaq_path +"/shutdown",nil)
-	// log.Println(shutdown)
+	shutDownDatapaqServer()
 }
+
+//Get datapaq version
+func getDatapaqVersion(){
+	var result map[string]interface{}
+	version := getGETRequest(datapaq_path +"/version",nil)
+	json.Unmarshal([]byte(version), &result)
+	log.Println(result["version"])
+}
+
+//Get datapaq status
+func getDatapaqStatus(){
+	var result map[string]interface{}
+	status := getGETRequest(datapaq_path +"/status",nil)
+	json.Unmarshal([]byte(status), &result)
+	log.Println(result["status"])
+}
+
+//Get all container uid's, this can be used to call the scan method
+func getContainerUids(){
+	var result []map[string]string
+	getContainerUids := getGETRequest(datapaq_path +"/uids",nil)
+	json.Unmarshal([]byte(getContainerUids), &result)
+	for _, m := range result {
+        for k, v := range m {
+			log.Println(k +" = "+ v)
+        }
+    }
+}
+
+//Get linear barcode
+func getLinearBarcode(){
+	var result map[string]interface{}
+	scanLinearBarcode := getGETRequest(datapaq_path +"/scanLinearBarcode",nil)
+	json.Unmarshal([]byte(scanLinearBarcode), &result)
+	if(result["error"] !=nil){
+		log.Println(result["message"])	
+	}else{
+		log.Println(result["LinearBarcode"])
+	}
+}
+
+
+//Scan a uid as JSON
+func getContainerScanAsJson(){
+	var result map[string]interface{}
+	scanparam := make(map[string]string)
+	scanparam["uid"] = "11"
+	scan := getGETRequest(datapaq_path +"/scanAsJson",scanparam)
+	json.Unmarshal([]byte(scan), &result)
+	log.Println(result)
+}
+
+
+//enable barcode scanner
+func enableBarcodeScanner(){
+	var result map[string]interface{}
+	enablescanner := getPOSTRequest(datapaq_path +"/enableBarcodeScanner",nil)
+	json.Unmarshal([]byte(enablescanner), &result)
+	log.Println(result["enableBarcodeScanner"])
+}
+
+//disable barcode scanner
+func disableBarcodeScanner(){
+	var result map[string]interface{}
+	disablescanner := getPOSTRequest(datapaq_path +"/disableBarcodeScanner",nil)
+	json.Unmarshal([]byte(disablescanner), &result)
+	log.Println(result["disableBarcodeScanner"])
+}
+
+//shutdown datapaq webserver
+func shutDownDatapaqServer(){
+	var result map[string]interface{}
+	shutdown := getPOSTRequest(datapaq_path +"/shutdown",nil)
+	json.Unmarshal([]byte(shutdown), &result)
+	log.Println(result["shutdown"])
+}
+
+
+// save last image specify the path
+func getLastSavedImage(){
+	var result map[string]interface{}
+	saveImgMap := make(map[string]string)
+	saveImgMap["path"] = "C:/temp/lastImg_1.png"
+	saveImgMap["scaleFactor"] = "0.15"
+	saveLastImage := getPOSTRequest(datapaq_path +"/saveLastImage",saveImgMap)
+	json.Unmarshal([]byte(saveLastImage), &result)
+	log.Println(result["saveLastImage"])
+}
+
 
 // Function for GET request
 func getGETRequest(path string, parameters map[string]string ) string {
@@ -120,7 +190,7 @@ func getGETIMGRequest(path string, parameters map[string]string,imgPath string )
     log.Println("Success!")
 }
 
-// Function for POST request
+	// Function for POST request
 func getPOSTRequest(path string, parameters map[string]string ) string {
 	u, _ := url.Parse(path)
 	if parameters != nil && len(parameters) != 0 {
