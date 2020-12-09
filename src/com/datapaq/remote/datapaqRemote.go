@@ -92,7 +92,7 @@ func getLinearBarcode(){
 func getContainerScanAsJson(){
 	var result map[string]interface{}
 	scanparam := make(map[string]string)
-	scanparam["uid"] = "11"
+	scanparam["uid"] = "1"
 	scan := getGETRequest(datapaq_path +"/scanAsJson",scanparam)
 	json.Unmarshal([]byte(scan), &result)
 	log.Println(result)
